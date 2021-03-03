@@ -28,6 +28,7 @@ class Expression:
             vars.extend(self.op2.variables())
         elif isinstance(self.op2, str):
             vars.append(self.op2)
+        vars = list(set(vars))
         vars.sort()
         return vars
     
@@ -44,6 +45,47 @@ class Expression:
                 self._op2 = self.op2.solve(vars)
             elif self.op2 in vars:
                 self._op2 = vars[self.op2]
+
+#------------------------------------------------#
+# VARIABLE                                       #
+#------------------------------------------------#
+
+# class Variable
+class Variable(Expression):
+    def __init__(self, strSymbol):
+        super().__init__("", strSymbol)
+    
+    def __str__(self):
+        if self.op1.lower() == "true":
+            return "T"
+        elif self.op1.lower() == "false":
+            return "F"
+        return self.op1
+    
+    def variables(self):
+        try:
+            numeric = float(self.op1)
+            return []
+        except:
+            lowerOp = self.op1.lower()
+            if lowerOp == "true" or lowerOp == "false":
+                return []
+            
+            return [self.op1]
+    
+    def solve(self, vars):
+        if self.op1 in vars:
+            return vars[self.op1]
+        try:
+            numeric = float(self.op1)
+            return numeric
+        except:
+            if self.op1.lower() == "true":
+                return True 
+            elif self.op1.lower() == "false":
+                return False
+            
+            return self.op1
 
 #------------------------------------------------#
 # DESCRIPTIVE OPERATIONS                         #
@@ -150,3 +192,39 @@ class UNEQUAL(Expression):
     def solve(self, vars):
         super().solve(vars)
         return self._op1 != self._op2
+
+# class LESS
+class LESS(Expression):
+    def __init__(self, op1, op2):
+        super().__init__("<", op1, op2)
+    
+    def solve(self, vars):
+        super().solve(vars)
+        return self._op1 < self._op2
+
+# class GREATER
+class GREATER(Expression):
+    def __init__(self, op1, op2):
+        super().__init__(">", op1, op2)
+    
+    def solve(self, vars):
+        super().solve(vars)
+        return self._op1 > self._op2
+
+# class LESS_EQUAL
+class LESS_EQUAL(Expression):
+    def __init__(self, op1, op2):
+        super().__init__("≤", op1, op2)
+    
+    def solve(self, vars):
+        super().solve(vars)
+        return self._op1 <= self._op2
+
+# class GREATER_EQUAL
+class GREATER_EQUAL(Expression):
+    def __init__(self, op1, op2):
+        super().__init__("≥", op1, op2)
+    
+    def solve(self, vars):
+        super().solve(vars)
+        return self._op1 >= self._op2

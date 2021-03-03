@@ -101,17 +101,19 @@ class RawExpression:
         elif idxOr != -1:
             return self._binaryOp(OR, "|", parsedExp, self.innerExps, self.depth)
         
-        # parse Expression
-        if parsedExp in self.innerExps:
-            return self.innerExps[parsedExp]
-        try:
-            numeric = float(parsedExp)
-            return numeric
-        except:
-            if parsedExp.lower() == "true":
-                return True 
-            elif parsedExp.lower() == "false":
-                return False
-            
-            # or, just variable
-            return parsedExp
+        # equal, unequal
+        idxEqual = parsedExp.find("=")
+        idxUnequal = parsedExp.find("!=")
+
+        if idxEqual != -1 and idxUnequal != -1:
+            if idxEqual < idxUnequal:
+                return self._binaryOp(EQUAL, "=", parsedExp, self.innerExps, self.depth)
+            else:
+                return self._binaryOp(UNEQUAL, "!=", parsedExp, self.innerExps, self.depth)
+        elif idxEqual != -1:
+            return self._binaryOp(EQUAL, "=", parsedExp, self.innerExps, self.depth) 
+        elif idxUnequal != -1:
+            return self._binaryOp(UNEQUAL, "!=", parsedExp, self.innerExps, self.depth)
+        
+        # or,
+        return Variable(parsedExp)

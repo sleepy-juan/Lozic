@@ -1,7 +1,14 @@
 from Parser import RawExpression
 from Visualization import Table
+from Expression import *
 
 eq = RawExpression.raw(input(">> "))
+raw = input(">> ")
+while raw != "solve":
+    _eq = RawExpression.raw(raw)
+    eq = AND(eq, _eq)
+    raw = input(">> ")
+
 vars = eq.variables()
 
 table_data = [vars + [eq]]
@@ -16,4 +23,3 @@ generateRow([], 0)
 
 table = Table(table_data)
 table.show({eq: True})
-table.html("eq")
